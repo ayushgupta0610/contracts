@@ -19,17 +19,6 @@ describe("ETHBank", function () {
     return { ethBank, owner, otherAccount, ownerAddress };
   }
 
-  async function deployReentrancyExploitFixture(ethBankContractAddress: string) {
-    // Contracts are deployed using the first signer/account by default
-    const [owner, otherAccount] = await ethers.getSigners();
-    const ownerAddress = await owner.getAddress();
-
-    const ReentrancyExploit = await ethers.getContractFactory("ReentrancyExploit");
-    const reentrancyExploit = await ReentrancyExploit.deploy(ethBankContractAddress);
-
-    return { reentrancyExploit, owner, otherAccount, ownerAddress };
-  }
-
   async function deployBankAndExploitFixture() {
     // Contracts are deployed using the first signer/account by default
     // Contracts are deployed using the first signer/account by default
