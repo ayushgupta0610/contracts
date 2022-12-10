@@ -4,7 +4,9 @@
   "description": "A repo to create and test contracts",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "deploy": "npx hardhat deploy"
   },
   "repository": {
     "type": "git",
