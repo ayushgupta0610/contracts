@@ -19,6 +19,33 @@ describe("ETHBank", function () {
     return { ethBank, owner, otherAccount, ownerAddress };
   }
 
+  async function deployReentrancyExploitFixture(ethBankContractAddress: string) {
+    // Contracts are deployed using the first signer/account by default
+    const [owner, otherAccount] = await ethers.getSigners();
+    const ownerAddress = await owner.getAddress();
+
+    const ReentrancyExploit = await ethers.getContractFactory("ReentrancyExploit");
+    const reentrancyExploit = await ReentrancyExploit.deploy(ethBankContractAddress);
+
+    return { reentrancyExploit, owner, otherAccount, ownerAddress };
+  }
+
+  async function deployBankAndExploitFixture() {
+    // Contracts are deployed using the first signer/account by default
+    // Contracts are deployed using the first signer/account by default
+    const [owner, alice, bob] = await ethers.getSigners();
+    const ownerAddress = await owner.getAddress();
+
+    const ETHBank = await ethers.getContractFactory("ETHBank");
+    const ReentrancyExploit = await ethers.getContractFactory("ReentrancyExploit");
+
+
+    const ethBank = await ETHBank.deploy(ownerAddress);
+    const reentrancyExploit = await ReentrancyExploit.deploy(ethBank.address);
+
+    return { ethBank, reentrancyExploit, owner, ownerAddress };
+  }
+
   describe("Deployment", function () {
     it("Should set the right owner", async function () {
       const { ethBank, ownerAddress } = await loadFixture(deployETHBankFixture);
@@ -27,7 +54,10 @@ describe("ETHBank", function () {
     });
   });
 
-  describe("Withdrawals", function () {
+  describe("Exploit", function () {
+    it("Should test for ETHBank exploit", async function () {
+      const { ethBank, reentrancyExploit, owner, ownerAddress } = await loadFixture(deployBankAndExploitFixture);
+    });
     // describe("Validations", function () {
     //   it("Should revert with the right error if called too soon", async function () {
     //     const { lock } = await loadFixture(deployOneYearLockFixture);
